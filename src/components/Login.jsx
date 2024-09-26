@@ -32,9 +32,7 @@ export default function Login() {
         id: response.data._id
       }));
 
-      // Set a cookie for the token (optional)
-      document.cookie = `user_token=${response.data.token}`;
-      console.log(document.cookie);
+     
 
       // Navigate to the product page after login
       navigate("/product");
