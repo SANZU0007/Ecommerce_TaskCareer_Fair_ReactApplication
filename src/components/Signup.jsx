@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
-import 'animate.css';
-// import CancelIcon from '@mui/icons-material/Cancel';
+import { Link, useNavigate } from 'react-router-dom';
 import axios from 'axios';
+import CircularProgress from '@mui/material/CircularProgress';
 
 export default function Signup() {
     const [role, setRole] = useState('user');
@@ -9,19 +9,41 @@ export default function Signup() {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [info, setInfo] = useState('');
+    const [loading, setLoading] = useState(false); // Loading state
+    const navigate = useNavigate(); // To navigate to another route
 
-     const handleSubmit = async (e) => {
-        console.log(process.env.REACT_APP_API_URL);
+    const handleSubmit = async (e) => {
         e.preventDefault();
         setInfo('');
-        let response = await axios.post('https://ecommerceguviproject.onrender.com/auth/register',{
-            role,
-            username,
-            email,
-            password
-        })
-        console.log(response);
-        console.log('Registering ', { role, username, email });
+        setLoading(true); // Show the loader when starting the request
+
+        try {
+            const response = await axios.post('https://ecommerceguviproject.onrender.com/auth/register', {
+                role,
+                username,
+                email,
+                password
+            });
+            console.log('Registering ', { role, username, email });
+            
+            // Assuming response.data has a message or status
+            if (response.data.alreadyExists) {
+                setInfo('Account already exists. Redirecting...');
+                setTimeout(() => {
+                    navigate('/'); // Navigate to home if account already exists
+                }, 1500); // Delay to show the info message before navigating
+            } else {
+                setInfo('Registration successful!');
+                setTimeout(() => {
+                    navigate('/'); // Navigate to home after successful registration
+                }, 1500);
+            }
+        } catch (error) {
+            console.error('Error during registration:', error);
+            setInfo('Registration failed. Please try again.');
+        } finally {
+            setLoading(false); // Hide the loader after the request
+        }
 
         // Clear the input fields after submission
         setRole('user');
@@ -37,9 +59,7 @@ export default function Signup() {
                 {info && <p className="mb-4 text-red-600">{info}</p>}
                 <form onSubmit={handleSubmit}>
                     <div className="mb-4 flex items-center space-x-4">
-                        <label className="block text-sm font-medium text-gray-600">
-                            Role:
-                        </label>
+                        <label className="block text-sm font-medium text-gray-600">Role:</label>
                         <div className='flex space-x-4'>
                             <div className="flex items-center">
                                 <input
@@ -68,9 +88,7 @@ export default function Signup() {
                         </div>
                     </div>
                     <div className="mb-4">
-                        <label className="block mb-2 text-sm font-medium text-gray-600">
-                            Username
-                        </label>
+                        <label className="block mb-2 text-sm font-medium text-gray-600">Username</label>
                         <input
                             type='text'
                             value={username}
@@ -80,9 +98,7 @@ export default function Signup() {
                         />
                     </div>
                     <div className="mb-4">
-                        <label className="block mb-2 text-sm font-medium text-gray-600">
-                            Email:
-                        </label>
+                        <label className="block mb-2 text-sm font-medium text-gray-600">Email:</label>
                         <input
                             type="email"
                             value={email}
@@ -92,9 +108,7 @@ export default function Signup() {
                         />
                     </div>
                     <div className="mb-4">
-                        <label className="block mb-2 text-sm font-medium text-gray-600">
-                            Password:
-                        </label>
+                        <label className="block mb-2 text-sm font-medium text-gray-600">Password:</label>
                         <input
                             type="password"
                             value={password}
@@ -106,10 +120,19 @@ export default function Signup() {
                     <button
                         type="submit"
                         className="w-full px-4 py-2 mt-4 text-white bg-blue-600 rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-400"
+                        disabled={loading} // Disable button when loading
                     >
-                        Sign Up
+                        {loading ? <CircularProgress size={24} color="inherit" /> : 'Sign Up'}
                     </button>
                 </form>
+                <div className="mt-4 text-center">
+          <p className="text-sm text-gray-600">
+            Already you have an account?{' '}
+            <Link to="/" className="text-blue-600 hover:underline">
+              login here
+            </Link>
+          </p>
+        </div>
             </div>
         </div>
     );
