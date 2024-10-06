@@ -7,6 +7,8 @@ export default function HomePage() {
     let [products, setProducts] = useState([]);
     let [category, setCategory] = useState('All');
     let [itemName, setItemName] = useState('');
+
+    
     let [ogData, setOgData] = useState([]);
     let [price, setPrice] = useState(0);
     let [isAdmin, setIsAdmin] = useState(false); // To track if the user is an admin
