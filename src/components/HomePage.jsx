@@ -4,6 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import { Logout } from '@mui/icons-material'; // Importing logout icon from Material-UI
 
 export default function HomePage() {
+    
     let [products, setProducts] = useState([]);
     let [category, setCategory] = useState('All');
     let [itemName, setItemName] = useState('');
