@@ -1,11 +1,10 @@
-
 import axios from 'axios';
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
 import AddIcon from '@mui/icons-material/Add';
-import { Fab, Dialog, DialogActions, DialogContent, DialogTitle, Button, TextField, Select, MenuItem, CircularProgress } from '@mui/material'; // Floating action button
+import { Fab, Dialog, DialogActions, DialogContent, DialogTitle, Button, TextField, Select, MenuItem, CircularProgress } from '@mui/material';
 
 export default function AllProduct() {
     const [products, setProducts] = useState([]);
@@ -16,6 +15,7 @@ export default function AllProduct() {
     const [loading, setLoading] = useState(false); // Loading state
     const [dialogOpen, setDialogOpen] = useState(false);
     const [formData, setFormData] = useState({ image: '', title: '', description: '', price: 0, availableQuantity: 0, productType: '' });
+    const [errors, setErrors] = useState({});
     const navigate = useNavigate();
 
     // Load Products
@@ -103,10 +103,27 @@ export default function AllProduct() {
     // Handle Dialog Close
     const handleDialogClose = () => {
         setDialogOpen(false);
+        setErrors({});
+    };
+
+    // Validate Form
+    const validateForm = () => {
+        let tempErrors = {};
+        if (!formData.image) tempErrors.image = 'Image URL is required';
+        if (!formData.title) tempErrors.title = 'Title is required';
+        if (!formData.description) tempErrors.description = 'Description is required';
+        if (!formData.price || formData.price <= 0) tempErrors.price = 'Valid price is required';
+        if (!formData.availableQuantity || formData.availableQuantity < 0) tempErrors.availableQuantity = 'Valid quantity is required';
+        if (!formData.productType) tempErrors.productType = 'Product type is required';
+
+        setErrors(tempErrors);
+        return Object.keys(tempErrors).length === 0;
     };
 
     // Handle Form Submit
     const handleFormSubmit = () => {
+        if (!validateForm()) return;
+
         setLoading(true);
         const apiCall = formData._id
             ? axios.put(`${process.env.REACT_APP_API_URL}/api/products/${formData._id}`, formData, {
@@ -164,14 +181,6 @@ export default function AllProduct() {
                     onChange={e => setItemName(e.target.value)}
                     className="p-2 rounded-md border border-gray-300 bg-white text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500 transition duration-200"
                 />
-{/* 
-                <input
-                    type="number"
-                    placeholder="Min Price"
-                    value={price}
-                    onChange={e => setPrice(e.target.value)}
-                    className="p-2 rounded-md border border-gray-300 bg-white text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500 transition duration-200"
-                /> */}
             </div>
 
             <main className="flex-grow p-6">
@@ -227,7 +236,9 @@ export default function AllProduct() {
                         type="text"
                         fullWidth
                         value={formData.image}
-                        onChange={e => setFormData({ ...formData, image: e.target.value })}
+                        onChange={(e) => setFormData({ ...formData, image: e.target.value })}
+                        error={!!errors.image}
+                        helperText={errors.image}
                     />
                     <TextField
                         margin="dense"
@@ -235,7 +246,9 @@ export default function AllProduct() {
                         type="text"
                         fullWidth
                         value={formData.title}
-                        onChange={e => setFormData({ ...formData, title: e.target.value })}
+                        onChange={(e) => setFormData({ ...formData, title: e.target.value })}
+                        error={!!errors.title}
+                        helperText={errors.title}
                     />
                     <TextField
                         margin="dense"
@@ -243,7 +256,9 @@ export default function AllProduct() {
                         type="text"
                         fullWidth
                         value={formData.description}
-                        onChange={e => setFormData({ ...formData, description: e.target.value })}
+                        onChange={(e) => setFormData({ ...formData, description: e.target.value })}
+                        error={!!errors.description}
+                        helperText={errors.description}
                     />
                     <TextField
                         margin="dense"
@@ -251,7 +266,9 @@ export default function AllProduct() {
                         type="number"
                         fullWidth
                         value={formData.price}
-                        onChange={e => setFormData({ ...formData, price: parseFloat(e.target.value) })}
+                        onChange={(e) => setFormData({ ...formData, price: parseFloat(e.target.value) })}
+                        error={!!errors.price}
+                        helperText={errors.price}
                     />
                     <TextField
                         margin="dense"
@@ -259,15 +276,17 @@ export default function AllProduct() {
                         type="number"
                         fullWidth
                         value={formData.availableQuantity}
-                        onChange={e => setFormData({ ...formData, availableQuantity: parseInt(e.target.value) })}
+                        onChange={(e) => setFormData({ ...formData, availableQuantity: parseInt(e.target.value) })}
+                        error={!!errors.availableQuantity}
+                        helperText={errors.availableQuantity}
                     />
                     <Select
-                        margin="dense"
-                        label="Product Type"
-                        fullWidth
                         value={formData.productType}
-                        onChange={e => setFormData({ ...formData, productType: e.target.value })}
+                        fullWidth
+                        onChange={(e) => setFormData({ ...formData, productType: e.target.value })}
+                        error={!!errors.productType}
                     >
+                        <MenuItem value=""><em>Select Product Type</em></MenuItem>
                         <MenuItem value="Electronics">Electronics</MenuItem>
                         <MenuItem value="Home Appliances">Home Appliances</MenuItem>
                         <MenuItem value="Backpack">Backpack</MenuItem>
@@ -278,7 +297,7 @@ export default function AllProduct() {
                     <Button onClick={handleDialogClose} color="primary">
                         Cancel
                     </Button>
-                    <Button onClick={handleFormSubmit} color="primary">
+                    <Button onClick={handleFormSubmit} color="primary" disabled={loading}>
                         {loading ? <CircularProgress size={24} /> : 'Submit'}
                     </Button>
                 </DialogActions>
