@@ -10,6 +10,7 @@ function App() {
   return (
     <BrowserRouter>
     <Routes>
+
       <Route path='/product' element={<HomePage/>}/>
       <Route path='/' element={<Login/>}/>
       <Route path='/register' element={<Signup/>}/>
