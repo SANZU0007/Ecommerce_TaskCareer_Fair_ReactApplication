@@ -1,23 +1,58 @@
 import axios from 'axios';
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-
-
-
-import { AppBar, Toolbar, Typography, Button, IconButton } from '@mui/material';
-
+import { AppBar, Toolbar, Typography, Button, IconButton, InputBase, Grid, Box, Paper } from '@mui/material';
+import { styled, alpha } from '@mui/material/styles';
 import LogoutIcon from '@mui/icons-material/Logout';
+import SearchIcon from '@mui/icons-material/Search';
+import ShoppingCartIcon from '@mui/icons-material/ShoppingCart';
+
+const Search = styled('div')(({ theme }) => ({
+    position: 'relative',
+    borderRadius: theme.shape.borderRadius,
+    backgroundColor: alpha(theme.palette.common.white, 0.15),
+    '&:hover': {
+        backgroundColor: alpha(theme.palette.common.white, 0.25),
+    },
+    marginRight: theme.spacing(2),
+    marginLeft: 0,
+    width: '100%',
+    [theme.breakpoints.up('sm')]: {
+        marginLeft: theme.spacing(3),
+        width: 'auto',
+    },
+}));
+
+const SearchIconWrapper = styled('div')(({ theme }) => ({
+    padding: theme.spacing(0, 2),
+    height: '100%',
+    position: 'absolute',
+    pointerEvents: 'none',
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+}));
+
+const StyledInputBase = styled(InputBase)(({ theme }) => ({
+    color: 'inherit',
+    '& .MuiInputBase-input': {
+        padding: theme.spacing(1, 1, 1, 0),
+        paddingLeft: `calc(1em + ${theme.spacing(4)})`,
+        transition: theme.transitions.create('width'),
+        width: '100%',
+        [theme.breakpoints.up('md')]: {
+            width: '20ch',
+        },
+    },
+}));
 
 export default function HomePage() {
-    
     let [products, setProducts] = useState([]);
     let [category, setCategory] = useState('All');
     let [itemName, setItemName] = useState('');
-
-    
     let [ogData, setOgData] = useState([]);
     let [price, setPrice] = useState(0);
-    let [isAdmin, setIsAdmin] = useState(false); // To track if the user is an admin
+    let [isAdmin, setIsAdmin] = useState(false); 
     let navigate = useNavigate();
 
     function loadProducts() {
@@ -25,15 +60,11 @@ export default function HomePage() {
             .then((res) => {
                 setProducts(res.data);
                 setOgData(res.data);
-            }).catch(() => {
-                // Handle error
-            });
+            }).catch(() => {});
     }
 
     useEffect(() => {
         loadProducts();
-
-        // Check if the user in localStorage is admin
         const user = JSON.parse(localStorage.getItem('user'));
         if (user && user.role === 'admin') {
             setIsAdmin(true);
@@ -42,73 +73,66 @@ export default function HomePage() {
 
     useEffect(() => {
         let filteredProducts = ogData;
-
-        // Filter by category
         if (category !== 'All') {
             filteredProducts = filteredProducts.filter((x) => x.productType === category);
         }
-
-        // Filter by itemName (case-insensitive)
         if (itemName.trim() !== '') {
             filteredProducts = filteredProducts.filter((x) => 
                 x.title.toLowerCase().includes(itemName.toLowerCase())
             );
         }
-
-        // Filter by price
         if (price !== 0) {
             filteredProducts = filteredProducts.filter((x) => 
                 Math.trunc(x.price) === parseInt(price)
             );
         }
-
-        // Update the displayed products
         setProducts(filteredProducts);
     }, [category, itemName, price, ogData]);
 
     const handleLogout = () => {
-        // Clear user data from local storage
         localStorage.removeItem('user');
-        navigate('/'); // Redirect to home page
+        navigate('/'); 
     };
 
     return (
-        <div className="min-h-screen bg-gray-50 flex flex-col">
-            <AppBar position="static" color="primary">
-            <Toolbar className="flex justify-between">
-                <Typography variant="h4" component="h1" className="font-bold">
-                    My E-Commerce Store
-                </Typography>
-                <div className="flex items-center space-x-3">
-                    {/* Conditionally render the Admin button */}
+        <Box sx={{ minHeight: '100vh', display: 'flex', flexDirection: 'column', backgroundColor: '#f5f5f5' }}>
+            <AppBar position="static" color="primary" elevation={3}>
+                <Toolbar>
+                    <Typography variant="h5" component="h1" sx={{ flexGrow: 1, fontWeight: 'bold' }}>
+                        My E-Commerce Store
+                    </Typography>
+                    <Search>
+                        <SearchIconWrapper>
+                            <SearchIcon />
+                        </SearchIconWrapper>
+                        <StyledInputBase
+                            placeholder="Search…"
+                            inputProps={{ 'aria-label': 'search' }}
+                            value={itemName}
+                            onChange={e => setItemName(e.target.value)}
+                        />
+                    </Search>
                     {isAdmin && (
                         <Button
                             variant="contained"
                             color="success"
                             onClick={() => navigate('/admin')}
-                            className="hover:bg-green-700 transition"
+                            sx={{ mx: 1 }}
                         >
                             Admin Panel
                         </Button>
                     )}
-                    <Button
-                        variant="contained"
-                        color="error"
-                        onClick={handleLogout}
-                        startIcon={<LogoutIcon />}
-                        className="hover:bg-red-700 transition"
-                    >
-                        Logout
-                    </Button>
-                </div>
-            </Toolbar>
-        </AppBar>
+                    <IconButton color="inherit" onClick={handleLogout}>
+                        <LogoutIcon />
+                    </IconButton>
+                </Toolbar>
+            </AppBar>
 
-            <div className="mt-4 ml-6 flex space-x-4 items-center">
+            <Box sx={{ mt: 4, ml: 6, display: 'flex', alignItems: 'center', gap: 2 }}>
                 <select
                     value={category}
                     onChange={e => setCategory(e.target.value)}
-                    className="p-2 rounded-md border border-gray-300 bg-white text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500 transition duration-200"
+                    className="p-2 rounded-md border border-gray-300 bg-white text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
                 >
                     <option value="All">All Categories</option>
                     <option value="Electronics">Electronics</option>
@@ -116,39 +140,38 @@ export default function HomePage() {
                     <option value="Backpack">Backpack</option>
                     <option value="Speaker">Speaker</option>
                 </select>
-
-                <input
-                    type="text"
-                    placeholder="Search..."
-                    value={itemName}
-                    onChange={e => setItemName(e.target.value)}
-                    className="p-2 rounded-md border border-gray-300 bg-white text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500 transition duration-200"
-                />
-            </div>
+            </Box>
 
             <main className="flex-grow p-6">
-                <h2 className="text-2xl font-semibold mb-6">Featured Products</h2>
-                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+                <Typography variant="h4" gutterBottom>Featured Products</Typography>
+                <Grid container spacing={4}>
                     {products.map(product => (
-                        <div key={product._id} className="group p-2 relative bg-white rounded-lg overflow-hidden shadow-lg transition-transform transform hover:scale-105">
-                            <img className="w-full h-48 rounded-t-lg" src={product.image} alt={product.title} />
-                            <div className="bg-white">
-                                <div className="p-4 flex space-x-2">
-                                    <h2 className="text-lg font-semibold">{product.title}</h2>
-                                    <p className="text-gray-600 text-xl font-bold">₹{product.price.toFixed(2)}</p>
-                                </div>
-                                <button onClick={() => navigate(`/product/${product._id}`)} className="p-2 w-full bg-blue-600 text-white py-2 rounded hover:bg-blue-700 transition">
-                                    View Product
-                                </button>
-                            </div>
-                        </div>
+                        <Grid item xs={12} sm={6} md={4} lg={3} key={product._id}>
+                            <Paper elevation={3} sx={{ p: 2, transition: 'transform 0.3s', '&:hover': { transform: 'scale(1.05)' } }}>
+                                <img className="w-full h-48 rounded-t-lg" src={product.image} alt={product.title} />
+                                <Box sx={{ mt: 1 }}>
+                                    <Typography variant="h6" component="h2">{product.title}</Typography>
+                                    <Typography variant="body2" color="textSecondary">₹{product.price.toFixed(2)}</Typography>
+                                    <Button 
+                                        variant="contained" 
+                                        color="primary" 
+                                        fullWidth 
+                                        onClick={() => navigate(`/product/${product._id}`)}
+                                        sx={{ mt: 2 }}
+                                    >
+                                        View Product
+                                    </Button>
+                                </Box>
+                            </Paper>
+                        </Grid>
                     ))}
-                </div>
+                </Grid>
             </main>
 
-            <footer className="bg-blue-600 text-white text-center p-4">
-                <p>&copy; 2024 My E-Commerce Store</p>
-            </footer>
-        </div>
+            <Box sx={{ backgroundColor: '#1976d2', color: 'white', textAlign: 'center', py: 2 }}>
+                <Typography>&copy; 2024 My E-Commerce Store</Typography>
+            </Box>
+        </Box>
     );
 }
+
