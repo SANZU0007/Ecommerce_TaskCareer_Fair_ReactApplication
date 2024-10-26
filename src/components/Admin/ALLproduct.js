@@ -152,15 +152,16 @@ export default function AllProduct() {
 
     return (
         <div className="min-h-screen bg-gray-50 flex flex-col">
-            <header className="bg-blue-600 text-white flex justify-between p-4">
-                <h1 className="text-3xl font-bold">My E-Commerce Store</h1>
-                <button
-                        onClick={() => navigate('/product')}
-                        className="bg-green-600 text-white p-3 rounded hover:bg-green-700 transition"
-                    >
-                        back
-                    </button>
-            </header>
+           <header className="bg-gradient-to-r from-blue-600 to-blue-800 text-white flex justify-between items-center p-5 shadow-md">
+    <h1 className="text-3xl font-bold">My E-Commerce Store</h1>
+    <button
+        onClick={() => navigate('/product')}
+        className="bg-gradient-to-r from-green-500 to-green-700 text-white px-6 py-2 rounded-lg hover:from-green-600 hover:to-green-800 shadow-md transition-transform transform hover:scale-105"
+    >
+        Back
+    </button>
+</header>
+
             <div className="mt-4 ml-6 flex space-x-4 items-center">
                 <select
                     value={category}
