@@ -12,6 +12,7 @@ export default function Signup() {
     const [loading, setLoading] = useState(false); // Loading state
     const navigate = useNavigate(); // To navigate to another route
 
+    
     const handleSubmit = async (e) => {
         e.preventDefault();
         setInfo('');
