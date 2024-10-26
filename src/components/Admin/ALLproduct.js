@@ -4,6 +4,11 @@ import { useNavigate } from 'react-router-dom';
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
 import AddIcon from '@mui/icons-material/Add';
+
+
+
+import { AppBar, Toolbar, Typography,  IconButton } from '@mui/material';
+import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import { Fab, Dialog, DialogActions, DialogContent, DialogTitle, Button, TextField, Select, MenuItem, CircularProgress } from '@mui/material';
 
 export default function AllProduct() {
@@ -152,15 +157,29 @@ export default function AllProduct() {
 
     return (
         <div className="min-h-screen bg-gray-50 flex flex-col">
-           <header className="bg-gradient-to-r from-blue-600 to-blue-800 text-white flex justify-between items-center p-5 shadow-md">
-    <h1 className="text-3xl font-bold">My E-Commerce Store</h1>
-    <button
-        onClick={() => navigate('/product')}
-        className="bg-gradient-to-r from-green-500 to-green-700 text-white px-6 py-2 rounded-lg hover:from-green-600 hover:to-green-800 shadow-md transition-transform transform hover:scale-105"
-    >
-        Back
-    </button>
-</header>
+         <AppBar position="static" sx={{ background: 'linear-gradient(to right, #1976d2, #1565c0)' }}>
+    <Toolbar>
+        <Typography variant="h6" sx={{ flexGrow: 1, fontWeight: 'bold' }}>
+            My E-Commerce Store
+        </Typography>
+        <Button
+            onClick={() => navigate('/product')}
+            variant="contained"
+            color="secondary"
+            startIcon={<ArrowBackIcon />}
+            sx={{
+                background: 'linear-gradient(to right, #4caf50, #388e3c)',
+                color: 'white',
+                boxShadow: '0 3px 5px 2px rgba(76, 175, 80, .3)',
+                '&:hover': {
+                    background: 'linear-gradient(to right, #66bb6a, #43a047)',
+                },
+            }}
+        >
+            Back
+        </Button>
+    </Toolbar>
+</AppBar>
 
             <div className="mt-4 ml-6 flex space-x-4 items-center">
                 <select
