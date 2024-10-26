@@ -1,7 +1,12 @@
 import axios from 'axios';
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Logout } from '@mui/icons-material'; // Importing logout icon from Material-UI
+
+
+
+import { AppBar, Toolbar, Typography, Button, IconButton } from '@mui/material';
+
+import LogoutIcon from '@mui/icons-material/Logout';
 
 export default function HomePage() {
     
@@ -69,27 +74,35 @@ export default function HomePage() {
 
     return (
         <div className="min-h-screen bg-gray-50 flex flex-col">
-            <header className="bg-blue-600 text-white flex justify-between p-4">
-                <h1 className="text-3xl font-bold">My E-Commerce Store</h1>
-                <div className="flex items-center space-x-4">
+            <AppBar position="static" color="primary">
+            <Toolbar className="flex justify-between">
+                <Typography variant="h4" component="h1" className="font-bold">
+                    My E-Commerce Store
+                </Typography>
+                <div className="flex items-center space-x-3">
                     {/* Conditionally render the Admin button */}
                     {isAdmin && (
-                        <button
+                        <Button
+                            variant="contained"
+                            color="success"
                             onClick={() => navigate('/admin')}
-                            className="bg-green-600 text-white p-3 rounded hover:bg-green-700 transition"
+                            className="hover:bg-green-700 transition"
                         >
                             Admin Panel
-                        </button>
+                        </Button>
                     )}
-                    <button
+                    <Button
+                        variant="contained"
+                        color="error"
                         onClick={handleLogout}
-                        className="flex items-center space-x-1 bg-red-600 text-white p-2 rounded hover:bg-red-700 transition"
+                        startIcon={<LogoutIcon />}
+                        className="hover:bg-red-700 transition"
                     >
-                        <Logout />
-                        <span>Logout</span>
-                    </button>
+                        Logout
+                    </Button>
                 </div>
-            </header>
+            </Toolbar>
+        </AppBar>
 
             <div className="mt-4 ml-6 flex space-x-4 items-center">
                 <select
